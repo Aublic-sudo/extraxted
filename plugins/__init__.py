@@ -28,7 +28,7 @@ async def Start_msg(bot: stark , m: Message):
                             "Press **/mgconcept** for **Mgconcept app**..\n\n"
                             "Press **/down** for **For Downloading Url lists**..\n\n"
                             "Press **/forward** To **Forward from One channel to others**..\n\n"
-                            "**𝗕𝗼𝘁 𝗢𝘄𝗻𝗲𝗿 : 𝒞𝓇𝓎𝓅𝓉💞𝓈𝓉𝒶𝓇𝓀**")
+                            "**𝗕𝗼𝘁 𝗢𝘄𝗻𝗲𝗿 : WhiteBeard**")
            
 
 
@@ -40,5 +40,6 @@ async def restart_handler(_, m):
 @stark.on_message(filters.command(["log"]) 
 async def log_msg(bot: stark , m: Message):   
     await bot.send_document(m.chat.id, "log.txt")
+
 
 

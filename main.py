@@ -1,51 +1,88 @@
-# ================== IMPORTS ==================
-import os
-import asyncio
-import logging
-from pyrogram import Client, idle
-from logging.handlers import RotatingFileHandler
-from flask import Flask
-from threading import Thread
 
-# ================== LOGGING ==================
+#  MIT License
+#
+#  Copyright (c) 2019-present Dan <https://github.com/delivrance>
+#
+#  Permission is hereby granted, free of charge, to any person obtaining a copy
+#  of this software and associated documentation files (the "Software"), to deal
+#  in the Software without restriction, including without limitation the rights
+#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+#
+#  The above copyright notice and this permission notice shall be included in all
+#  copies or substantial portions of the Software.
+#
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#  SOFTWARE
+
+
+import os
+from config import Config
+from pyrogram import Client, idle
+import asyncio, logging
+import tgcrypto
+from pyromod import listen
+from logging.handlers import RotatingFileHandler
+  # 🔗 Added for Find API integration
+
+LOGGER = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO,
     format="%(name)s - %(message)s",
+    datefmt="%d-%b-%y %H:%M:%S",
     handlers=[
-        RotatingFileHandler("log.txt", maxBytes=5_000_000, backupCount=5),
-        logging.StreamHandler()
+        RotatingFileHandler(
+            "log.txt", maxBytes=5000000, backupCount=10
+        ),
+        logging.StreamHandler(),
     ],
 )
-LOGGER = logging.getLogger(__name__)
 
-# ================== BOT ==================
-bot = Client(
-    "StarkBot",                       # ✔ name kuch bhi rakh sakte ho
-    bot_token=os.environ.get("BOT_TOKEN"),
-    api_id=int(os.environ.get("API_ID")),
-    api_hash=os.environ.get("API_HASH"),
-    plugins=dict(root="plugins"),
-    workers=20
-)
+# Auth Users
+AUTH_USERS = [ int(chat) for chat in Config.AUTH_USERS.split(",") if chat != '']
 
-# ================== BOT START ==================
-async def main():
-    await bot.start()
-    me = await bot.get_me()
-    LOGGER.info(f"🤖 @{me.username} started successfully")
-    await idle()
+# Prefixes 
+prefixes = ["/", "~", "?", "!"]
 
-# ================== FLASK KEEP ALIVE ==================
+plugins = dict(root="plugins")
+if __name__ == "__main__" :
+    bot = Client(
+        "StarkBot",
+        bot_token=Config.BOT_TOKEN,
+        api_id=Config.API_ID,
+        api_hash=Config.API_HASH,
+        sleep_threshold=20,
+        plugins=plugins,
+        workers = 50
+    )
+
+    async def main():
+        await bot.start()
+        bot_info  = await bot.get_me()
+        LOGGER.info(f"<--- @{bot_info.username} Started (c) STARKBOT --->")
+        await idle()
+
+    asyncio.get_event_loop().run_until_complete(main())
+    LOGGER.info(f"<---Bot Stopped-->")
+
+
+# 🟢 Keep-alive for Replit/UptimeRobot (Flask)
+from flask import Flask
+from threading import Thread
+
 app = Flask(__name__)
 
-@app.route("/")
+@app.route('/')
 def home():
     return "Bot is Alive!"
 
-def run_flask():
+def run():
     app.run(host="0.0.0.0", port=8080)
 
-# ================== RUN ==================
-if __name__ == "__main__":
-    Thread(target=run_flask).start()   # Flask first
-    asyncio.run(main())                # Pyrogram safe run
+Thread(target=run).start()

@@ -29,7 +29,7 @@ import asyncio, logging
 import tgcrypto
 from pyromod import listen
 from logging.handlers import RotatingFileHandler
-from plugins.appx_api import ACADEMY_HOSTS  # 🔗 Added for Find API integration
+
 
 LOGGER = logging.getLogger(__name__)
 logging.basicConfig(
@@ -54,9 +54,9 @@ plugins = dict(root="plugins")
 if __name__ == "__main__" :
     bot = Client(
         "StarkBot",
-        bot_token=Config.BOT_TOKEN,
-        api_id=Config.API_ID,
-        api_hash=Config.API_HASH,
+        bot_token=os.environ.get("BOT_TOKEN"),
+        api_id=int(os.environ.get("API_ID")),
+        api_hash=os.environ.get("API_HASH"),
         sleep_threshold=20,
         plugins=plugins,
         workers = 50
@@ -86,3 +86,4 @@ def run():
     app.run(host="0.0.0.0", port=8080)
 
 Thread(target=run).start()
+

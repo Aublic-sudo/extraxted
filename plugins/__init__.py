@@ -7,7 +7,7 @@ import os
 import sys
 
 
-@stark.on_message(filters.command(["start"]) 
+@stark.on_message(filters.command(["start"])) 
 async def Start_msg(bot: stark , m: Message):
     await bot.send_photo(
     m.chat.id,
@@ -40,4 +40,5 @@ async def restart_handler(_, m):
 @stark.on_message(filters.command(["log"]) 
 async def log_msg(bot: stark , m: Message):   
     await bot.send_document(m.chat.id, "log.txt")
+
 

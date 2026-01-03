@@ -1,19 +1,11 @@
 FROM python:3.9.7-slim-buster
 
-WORKDIR /app
+WORKDIR 
 COPY . .
 
-RUN apt-get update && apt-get install -y \
-    gcc \
-    libffi-dev \
-    ffmpeg \
-    aria2 \
-    build-essential \
-    libmediainfo-dev \
-    python3-dev \
-    && pip install --no-cache-dir -r requirements.txt \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN pip3 install -r requirements.txt
 
 EXPOSE 8080
 
 CMD ["python", "./main.py"]
+
